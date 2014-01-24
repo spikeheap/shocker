@@ -11,9 +11,11 @@ app.filter('zeroNull', function() {
 });
 
 app.controller('CalculatorCtrl', function($scope) {
+
 	var importedScope = angular.fromJson(sessionStorage.calculator);
-	//$scope = importedScope ? importedScope : $scope 
-	$scope.dayRate = importedScope.dayRate;
+	$scope.dayRate = importedScope ? importedScope.dayRate : 0; 
+	$scope.nightRate = importedScope ? importedScope.nightRate : 0; 
+
     $scope.totalCost = "---";
 	$scope.twoRate = false;
 
@@ -31,7 +33,8 @@ app.controller('CalculatorCtrl', function($scope) {
 			$scope.totalCost = $scope.dayCost
 		}
 
-		sessionStorage.calculator = angular.toJson($scope);
+		sessionStorage.dayRate = angular.toJson($scope.dayRate);
+		sessionStorage.nightRate = angular.toJson($scope.nightRate);
 	}
 });
 
