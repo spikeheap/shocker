@@ -24,7 +24,6 @@ app.controller('CalculatorCtrl', ['$scope', 'ReadingStorage', function($scope, R
 
 	$scope.standingChargeTotal = 0;
     $scope.totalCost = "---";
-	$scope.twoRate = false;
 
 	$scope.calculate = function(){
 		$scope.twoRate = !($scope.charges.nightRate == "" || $scope.charges.nightRate == undefined || $scope.charges.nightRate == null || isNaN($scope.charges.nightRate));
@@ -60,16 +59,24 @@ app.controller('CalculatorCtrl', ['$scope', 'ReadingStorage', function($scope, R
 	}
 
 	$scope.setPrevious = function(reading){
-		$scope.oldReading = reading;
+		$scope.oldReading = {
+			date: new Date(reading.date.getTime()),
+			day: reading.day,
+			night: reading.night
+		};
 		$scope.calculate();
 	}
 
 	$scope.setCurrent = function(reading){
-		$scope.newReading = reading;
+		$scope.newReading = {
+			date: new Date(reading.date.getTime()),
+			day: reading.day,
+			night: reading.night
+		};
 		$scope.calculate();
 	}
 
-	$scope.readings = {};
+	$scope.readings = [];
 	$scope.$watch('ReadingStorage.readings', function(){
 		$scope.readings = ReadingStorage.readings;
 	});
@@ -84,7 +91,10 @@ app.service('ReadingStorage', function(){
 
 	this.delete = function(reading){
 		// toString the date so we're always dealing with String keys
-		delete this.readings[reading.date.getTime()];
+		var index = this.readings.indexOf(reading);
+		if(index > -1){
+			this.readings.splice(index,1);
+		}
 		this.saveReading();
 	};
 
@@ -98,7 +108,7 @@ app.service('ReadingStorage', function(){
 				night: reading.night
 			}
         	//convert all dates into date objects (from timeMillis)
-        	this.readings[modelToSave.date.getTime()] = modelToSave;
+        	this.readings.push(modelToSave);
     	}
         localStorage.readings = angular.toJson(this.readings);
     };
@@ -108,8 +118,9 @@ app.service('ReadingStorage', function(){
         if (loadedReadings){
         	this.readings = loadedReadings;
         	//convert all dates into date objects (from timeMillis)
-        	for (var reading in this.readings){
-	        	this.readings[reading].date = new Date(this.readings[reading].date);
+        	for (var i in this.readings){
+        		var reading = this.readings[i]
+	        	reading.date = new Date(reading.date);
 	        };
         }
     };
@@ -127,7 +138,7 @@ app.service('ReadingStorage', function(){
     };
 
     // initialise the service with localStorage, if it's present
-    this.readings = {};
+    this.readings = new Array();
     this.loadReadings();
 
     this.charges = {};
