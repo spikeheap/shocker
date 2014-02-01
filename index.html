@@ -140,18 +140,30 @@
         </div>
         <div class="col-sm-3">
             <h2>4: Result:</h2>
-            <div class="totalCost">
+            <div class="totalCost alert" ng-class="{'alert-success': totalCost >0,'alert-warning': totalCost <=0}">
                 <h1>{{totalCost/100 | currency:'£'}}<h1>
             </div>
-            <div class="breakdown">
-                <h4>Day</h4>
-                <p>{{dayKwh | zeroNull}} kWh</p>
-                <p>{{dayCost/100 | currency:'£'}}</p>
-                <h4>Night</h4>
-                <p>{{nightKwh| zeroNull}} kWh</p>
-                <p>{{nightCost/100 | currency:'£'}}</p>
-                <h4>Standing charge</h4>
-                <p>{{standingChargeTotal/100 | currency:'£'}}</p>
+            <div class="breakdown row">
+                <div class="col-xs-6">
+                    <h4>Day</h4>
+                    <p>{{dayKwh | zeroNull}} kWh</p>
+                    <p>{{dayCost/100 | currency:'£'}}</p>
+                    <p>{{dayCost/(dayCost+nightCost) *100 | number:1}}%</p>
+                </div>
+                <div class="col-xs-6">
+                    <h4>Night</h4>
+                    <p>{{nightKwh| zeroNull}} kWh</p>
+                    <p>{{nightCost/100 | currency:'£'}}</p>
+                    <p>{{nightCost/(dayCost+nightCost) *100 | number:1}}%</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4>Overall cost/kWh</h4>
+                    <p>{{ (dayCost+nightCost) / (dayKwh + nightKwh) | number:2}}p</p>
+                    <h4>Standing charge</h4>
+                    <p>{{standingChargeTotal/100 | currency:'£'}}</p>
+                </div>
             </div>
         </div>
       </div>
